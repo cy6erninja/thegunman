@@ -39,6 +39,8 @@ mod Intro {
 
     #[derive(Component)]
     pub struct IntroArtefact;
+    #[derive(Component)]
+    pub struct AnimatedLogoOverlay;
 
     pub struct IntroPlugin;
 
@@ -47,12 +49,13 @@ mod Intro {
             app
                 .add_systems(OnEnter(GameState::Intro), intro_setup)
                 .add_systems(OnExit(GameState::Intro), cleanup)
-                .add_systems(Update, show_main_menu);
+                .add_systems(Update, (fadeout_logo, show_main_menu));
         }
     }
 
     fn intro_setup(mut commands: Commands, asset_server: Res<AssetServer>, time: Res<Time>) {
         let logo_image = asset_server.load("logo_gunman.png");
+
 
         commands.spawn(
             (NodeBundle {
@@ -66,25 +69,37 @@ mod Intro {
 
                     ..default()
                 },
+                transform: Transform::from_xyz(0.0, 0.0, -1.0),
                 ..default()
             },
                 IntroArtefact
             ))
             .with_children(|parent| {
-                parent.spawn(
-                    (
-                        ImageBundle {
-                            image: UiImage { texture: logo_image, ..default() },
-                            style: Style {
-                                // align_self: AlignSelf::Center,
-                                width: Val::Px(400.0),
-                                height: Val::Px(400.0),
-                                ..default()
-                            },
-                            ..default()
-                        },
-                    ),
-                );
+                 parent.spawn(
+                     (
+                         ImageBundle {
+                             image: UiImage { texture: logo_image, ..default() },
+                             style: Style {
+                                 width: Val::Px(400.0),
+                                 height: Val::Px(400.0),
+                                 ..default()
+                             },
+                             transform: Transform::from_xyz(0.0, 0.0, 0.0),
+                             ..default()
+                         },
+                     ));
+
+                parent.spawn((NodeBundle {
+                    background_color: BackgroundColor(Color::Rgba {red: 0.0, green: 0.0, blue: 0.0, alpha: 0.0}),
+                    style: Style {
+                        position_type: PositionType::Absolute,
+                        width: Val::Px(400.0),
+                        height: Val::Px(400.0),
+                        ..default()
+                    },
+                    ..default()
+                },AnimatedLogoOverlay))
+                ;
             })
         ;
     }
@@ -106,12 +121,24 @@ mod Intro {
                     text: Text::from_section(time.elapsed_seconds_wrapped().to_string(), TextStyle{..default()}),
                     ..default()
                 }, DisplayedText, IntroArtefact));
-                if time.elapsed_seconds_wrapped() > 2.0 {
+                if time.elapsed_seconds_wrapped() > 5.0 {
                     next_state.set(GameState::Menu);
                 }
             }
             _ => {}
         };
+    }
+
+    fn fadeout_logo(
+        mut commands: Commands,
+        mut query: Query<&mut BackgroundColor, With<AnimatedLogoOverlay>>,
+        time: Res<Time>,
+    ) {
+        for mut bg_color in query.iter_mut() {
+            let elapsed = time.elapsed_seconds_wrapped();
+            let alpha = elapsed * 20.0/100.0;
+            bg_color.0 = Color::Rgba { red: 0.0, green: 0.0, blue: 0.0, alpha: alpha };
+        }
     }
 
     fn cleanup(mut commands: Commands, query: Query<Entity, With<IntroArtefact>>) {
