@@ -166,7 +166,7 @@ mod MainMenu {
             ..default()
         }));
 
-        fn render_button(mut parent: &mut ChildBuilder, name: &str) {
+        fn render_button(parent: &mut ChildBuilder, name: &str) {
             parent.spawn(ButtonBundle {
                 style: Style {
                     padding: UiRect::all(Val::Px(5.0)),
