@@ -49,7 +49,7 @@ mod Intro {
             app
                 .add_systems(OnEnter(GameState::Intro), intro_setup)
                 .add_systems(OnExit(GameState::Intro), cleanup)
-                .add_systems(Update, (fadeout_logo, show_main_menu));
+                .add_systems(Update, (logo_fadein, show_main_menu));
         }
     }
 
@@ -129,14 +129,14 @@ mod Intro {
         };
     }
 
-    fn fadeout_logo(
+    fn logo_fadein(
         mut commands: Commands,
         mut query: Query<&mut BackgroundColor, With<AnimatedLogoOverlay>>,
         time: Res<Time>,
     ) {
         for mut bg_color in query.iter_mut() {
             let elapsed = time.elapsed_seconds_wrapped();
-            let alpha = elapsed * 20.0/100.0;
+            let alpha = 1.0 - elapsed * 5.0 / 100.0;
             bg_color.0 = Color::Rgba { red: 0.0, green: 0.0, blue: 0.0, alpha: alpha };
         }
     }
