@@ -166,9 +166,34 @@ mod MainMenu {
             ..default()
         }));
 
+        fn render_button(mut parent: &mut ChildBuilder, name: &str) {
+            parent.spawn(ButtonBundle {
+                style: Style {
+                    padding: UiRect::all(Val::Px(5.0)),
+                    ..default()
+                },
+                background_color: BackgroundColor(Color::RED),
+                ..default()
+            }).with_children(|parent| {
+                parent.spawn(TextBundle {
+                    style: Style {
+                        justify_content: JustifyContent::Center,
+                        ..default()
+                    },
+                    text: Text::from_section(name, TextStyle {
+                        color: Color::BLACK,
+                        font_size: 20.0,
+                        ..default()}
+                    ),
+                    ..default()
+                });
+            });
+        }
+
         commands.spawn(NodeBundle {
             style: Style {
                 display: Display::Flex,
+                row_gap: Val::Px(20.0),
                 flex_direction: FlexDirection::Column,
                 justify_content: JustifyContent::Center,
                 align_items: AlignItems::Center,
@@ -177,67 +202,12 @@ mod MainMenu {
                 ..default()
             },
             ..default()
-        }).with_children(|parent| {
-            parent.spawn(ButtonBundle {
-                style: Style {
-                    width: Val::Px(100.0),
-                    ..default()
-                },
-                ..default()
-            }).with_children(|parent| {
-                parent.spawn(TextBundle {
-                    style: Style {
-                        justify_content: JustifyContent::Center,
-                        ..default()
-                    },
-                    text: Text::from_section("Singleplayer", TextStyle {
-                        color: Color::BLACK,
-                        ..default()}
-                    ),
-                    ..default()
-                });
-            });
-
-            parent.spawn(ButtonBundle {
-                style: Style {width: Val::Px(100.0), ..default()},
-                ..default()
-            }).with_children(|parent| {
-                parent.spawn(TextBundle {
-                    text: Text::from_section("Play With Friend", TextStyle {..default()}),
-                    ..default()
-                });
-            });
-
-            parent.spawn(ButtonBundle {
-                style: Style {width: Val::Px(100.0), ..default()},
-                ..default()
-            }).with_children(|parent| {
-                parent.spawn(TextBundle {
-                    text: Text::from_section("Play For Crypto", TextStyle {..default()}),
-                    ..default()
-                });
-            });
-
-            parent.spawn(ButtonBundle {
-                style: Style {width: Val::Px(100.0), ..default()},
-                ..default()
-            }).with_children(|parent| {
-                parent.spawn(TextBundle {
-                    text: Text::from_section("Settings", TextStyle {..default()}),
-                    ..default()
-                });
-            });
-
-            parent.spawn(ButtonBundle {
-                style: Style {width: Val::Px(100.0), ..default()},
-                ..default()
-            }).with_children(|parent| {
-                parent.spawn(TextBundle {
-                    text: Text::from_section("Quit", TextStyle {..default()}),
-                    ..default()
-                });
-            });
+        }).with_children(|mut parent| {
+            render_button(&mut parent, "Singleplayer");
+            render_button(&mut parent, "Play With A Friend");
+            render_button(&mut parent, "Play For Crypto");
+            render_button(&mut parent, "Settings");
+            render_button(&mut parent, "Quit");
         });
-
     }
 }
