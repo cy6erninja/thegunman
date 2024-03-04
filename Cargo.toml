@@ -1,0 +1,25 @@
+[package]
+name = "pushkar"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+# Revert this before relesase to bevy = "0.12.0"
+bevy = { version = "0.12.0", features = ["dynamic_linking"] }
+bevy_kira_audio = { version = "0.18.0", features = ["mp3"] }
+bevy_rapier2d = "0.23.0"
+rand = "0.8.5"
+
+[[bin]]
+name = "pushkar"
+path = "src/main.rs"
+
+# Enable a small amount of optimization in debug mode
+[profile.dev]
+opt-level = 1
+
+# Enable high optimizations for dependencies (incl. Bevy), but not for our code:
+[profile.dev.package."*"]
+opt-level = 2
